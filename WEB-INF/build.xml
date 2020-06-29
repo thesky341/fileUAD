@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="fileUAD" basedir="." default="compile">
+    <path id="addClasspath">
+        <fileset dir="./../../../lib">
+            <include name="servlet-api.jar" />
+            <include name="jsp-api.jar" />
+            <include name="websocket-api.jar" />
+        </fileset>
+    </path>
+    <property name="src" value="src" />
+    <property name="classes" value="classes" />
+    <target name="compile" description="编译Java源文件">
+        <delete dir="${classes}" />
+        <mkdir dir="${classes}" />
+        <javac destdir="${classes}" debug="true" includeantruntime="yes"
+            deprecation="false" optimize="false" failonerror="true">
+            <src path="${src}" />
+            <classpath refid="addClasspath" />
+        </javac>
+    </target>
+</project>

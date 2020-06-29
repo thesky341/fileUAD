@@ -23,7 +23,27 @@
 
   <display-name>fileUAD</display-name>
   <description>
-     实现文件的上传、下载、管理。
+     实现文件的上传、下载、管理。z
   </description>
+
+  <context-param>
+    <param-name>driver</param-name>
+    <param-value>com.mysql.cj.jdbc.Driver</param-value>
+  </context-param>
+
+  <context-param>
+    <param-name>url</param-name>
+    <param-value>jdbc:mysql://127.0.0.1:3306/fileUAD?useSSL=true</param-value>
+  </context-param>
+
+  <context-param>
+    <param-name>user</param-name>
+    <param-value>root</param-value>
+  </context-param>
+
+  <context-param>
+    <param-name>password</param-name>
+    <param-value>abcd1234</param-value>
+  </context-param>
 
 </web-app>
