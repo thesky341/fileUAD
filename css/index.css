@@ -1,0 +1,28 @@
+#id {
+    border-top: 1px solid ;
+}
+
+#messge {
+    display: inline-block;
+}
+
+#logined {
+    padding: 5px 10px;
+}
+
+#unlogin {
+    padding: 5px 10px;
+}
+
+.state {
+    padding: 5px, 10px;
+    margin: 5px 10px;
+    display: inline-block;
+}
+
+#pribox {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+

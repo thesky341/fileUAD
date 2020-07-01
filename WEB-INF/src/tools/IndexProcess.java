@@ -19,7 +19,39 @@ import pub.PublicFile;
 import pri.PrivateFile;
 
 public class IndexProcess {
-    public static void process(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public static void processPri(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        try {
+            Dbdao dd = new Dbdao();
+            HttpSession session = request.getSession();
+
+            if(session.getAttribute("username") != null) {
+                try {
+                    String sql = "SELECT pri.id, pri.file_to_user, pri.file_name, user.user_name, pri.size "
+                                + " FROM private_files pri, user WHERE pri.file_to_user = user.id AND user.user_name = '" + session.getAttribute("username") +"';";
+                    List<PrivateFile> lpri = new ArrayList<PrivateFile>();
+                    ResultSet rspri = dd.query(sql);
+                    while(rspri.next()) {
+                        int id = rspri.getInt(1);
+                        int fileToUser = rspri.getInt(2);
+                        String serverFileName = rspri.getString(3);
+                        String fileName = serverFileName.substring(0, serverFileName.indexOf(".suf.") == -1 ? 5 : serverFileName.indexOf(".suf."));
+                        String owner = rspri.getString(4);
+                        double size = rspri.getDouble(5);
+                        PrivateFile priFile = new PrivateFile(id, fileToUser, fileName, owner, size);
+                        lpri.add(priFile);
+                    }
+                    request.setAttribute("prifiles", lpri);
+                    rspri.close();
+                } catch(SQLException e) {
+                    e.printStackTrace();
+                }
+            }    
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void processPub(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             Dbdao dd = new Dbdao();
             HttpSession session = request.getSession();
@@ -33,7 +65,8 @@ public class IndexProcess {
                 while(rspub.next()) {
                     int id = rspub.getInt(1);
                     int pubToPri = rspub.getInt(2);
-                    String fileName = rspub.getString(3);
+                    String serverFileName = rspub.getString(3);
+                    String fileName = serverFileName.substring(0, serverFileName.indexOf(".suf.") == -1 ? 5 : serverFileName.indexOf(".suf."));
                     String owner = rspub.getString(4);
                     double size = rspub.getDouble(5);
                     PublicFile pubFile = new PublicFile(id, pubToPri, fileName, owner, size);
@@ -44,28 +77,6 @@ public class IndexProcess {
                 
             } catch(SQLException e) {
                 e.printStackTrace();
-            }
-
-            if(session.getAttribute("username") != null) {
-                try {
-                    String sql = "SELECT pri.id, pri.file_to_user, pri.file_name, user.user_name, pri.size "
-                                + " FROM private_files pri, user WHERE pri.file_to_user = user.id;";
-                    List<PrivateFile> lpri = new ArrayList<PrivateFile>();
-                    ResultSet rspri = dd.query(sql);
-                    while(rspri.next()) {
-                        int id = rspri.getInt(1);
-                        int fileToUser = rspri.getInt(2);
-                        String fileName = rspri.getString(3);
-                        String owner = rspri.getString(4);
-                        double size = rspri.getDouble(5);
-                        PrivateFile priFile = new PrivateFile(id, fileToUser, fileName, owner, size);
-                        lpri.add(priFile);
-                    }
-                    request.setAttribute("prifiles", lpri);
-                    rspri.close();
-                } catch(SQLException e) {
-                    e.printStackTrace();
-                }
             }    
         } catch(SQLException e) {
             e.printStackTrace();

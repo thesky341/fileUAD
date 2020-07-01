@@ -1,6 +1,8 @@
 import java.io.File;
 import java.io.IOException;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -24,10 +26,24 @@ public class UploadServlet extends HttpServlet {
             request.setCharacterEncoding("utf-8");
             Part part = request.getPart("file");
             String userName = (String)session.getAttribute("username");
-            File dir = new File(request.getServletContext().getRealPath("/WEB-INF/files/") + userName + "/");
+            File dir = new File(request.getServletContext().getRealPath("/WEB-INF/files/") + userName);
             if(!dir.exists()) {
                 dir.mkdirs();
             }
+            String fileNameInfo = part.getHeader("content-disposition");
+            String fileName = fileNameInfo.substring(fileNameInfo.indexOf("filename=\"") + 10, fileNameInfo.length() - 1);
+            String serverFileName = fileName + ".suf." + new Date();
+            ResultSet rs =  dd.query("SELECT id FROM user where user_name = '" + userName + "';");
+            if(rs.next()) {
+                int userId = rs.getInt(1);
+                double size = part.getSize() * 1.0 / 1024.0 /1024.0;
+                System.out.println(serverFileName);
+                part.write(dir + "/" + serverFileName);
+                String sql = "INSERT INTO private_files (file_name, file_to_user, size) VALUES ( '" 
+                    + serverFileName + "', " + userId + " , " + size + " );";
+                dd.update(sql);
+            }
+            response.sendRedirect("/pri");
         } catch(SQLException e) {
             e.printStackTrace();
         }
